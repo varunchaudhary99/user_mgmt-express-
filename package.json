@@ -1,0 +1,30 @@
+{
+  "name": "user_management_app",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/varunchaudhary99/user_mgmt-express-#readme",
+  "bugs": {
+    "url": "https://github.com/varunchaudhary99/user_mgmt-express-/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/varunchaudhary99/user_mgmt-express-.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0",
+    "nodemon": "^3.1.9"
+  }
+}
