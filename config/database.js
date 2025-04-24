@@ -1,18 +1,17 @@
 const mongoose = require('mongoose')
 require('dotenv').config();
+const Product = require("../model/product")
+const ProductJson = require("../config/product")
 
 let connectDB = async () => {
-
-await mongoose.connect(process.env.MONGO_URL)
-.then(() => console.log('connected to DB'))
-.catch(() => console.log('failed to connect to DB'))
+try {
+    await mongoose.connect(process.env.MONGO_URL)
+    await Product.create(ProductJson)
+    console.log("success")
+} catch (error){
+    console.log(error);
+}
 
 }
 
-
-
 module.exports = connectDB
-
-
-
-   

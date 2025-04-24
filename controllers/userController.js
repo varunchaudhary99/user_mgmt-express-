@@ -1,38 +1,42 @@
 let User = require('../model/user')
  const bcrypt = require('bcrypt')
  const jwt = require('jsonwebtoken')
-let register = async (req, res)=> {
+ const productDetails = require('../model/product');
+ const express = require('express')
+ const register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Validate input
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User already exists' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
     
-    let {email, name, password} = req.body
-    console.log(email,name,password)
+    const savedUser = await newUser.save();
 
-    const salt = await bcrypt.genSalt(10);
-    password = await bcrypt.hashSync(password, salt);
-
-  let user = new User({email,name,password})
-     await user.save()
-
-   let payload ={id: user.id}
-
-     jwt.sign(
-       payload,
-       process.env.JWT_SECERT,
-       {
-         expiresIn:'1hr'
-       }, (err,token) => {
-        if(err){
-          throw err
-        }
-        else{
-          res.send(token)
-        }
-       }
-     ).catch(()=>{
-         console.log("Error signing jwt!")
-     })
-    
-    res.send(user)}
-
+    res.status(201).json({ message: 'User registered successfully', user: savedUser });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 const signToken = (payload) => {
   return new Promise((resolve, reject) => {
@@ -51,8 +55,8 @@ const signToken = (payload) => {
 let login = async (req, res) => {
   try {
     let { inp_email, inp_password } = req.body;
-
-    let user = await User.findOne({ email: inp_email });
+  
+    let user = await User.findOne({email: inp_email.toLowerCase()});
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -75,11 +79,14 @@ let login = async (req, res) => {
   }
 };
 
-let profile = async(req, res) => 
-  { 
-    
-   res.status(200).send(req.user)
-}
+let productData = async (req, res) => {
+  try {
+    const products = await productDetails.find();
+    res.status(200).send(products);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching products", error });
+  }
+};
 let transaction = async(req, res) => 
   
  {   
@@ -97,7 +104,7 @@ let wishlist = async(req, res) =>
 module.exports ={
     login, 
     register,
-    profile,
+    productData,
     transaction,
     wishlist
 }
